@@ -82,4 +82,62 @@ function askPrice(tag: TAG, originPrice: number) {
   return PRICES[tag](originPrice);
 }
 
+//状态模式
+type State = 'american' | 'latte' | 'vanillaLatte' | 'mocha' | 'init';
+class CoffeeMaker {
+  public state: State;
+  public leftMilk: number;
+  public coffeeProcessor: Record<'that' | State, any> = {
+    that: this,
+    american() {
+      if (this.that.leftMilk <= 0) {
+        throw new Error("剩余牛奶不足!")
+      }
+      console.log(`left milk:${this.that.leftMilk}`);
+      console.log(`我只吐黑咖啡`);
+      
+    },
+    latte() {
+      this.american();
+      this.that.leftMilk -= 100;
+      console.log(`加点奶`);
+      
+    },
+    vanillaLatte() {
+      this.latte();
+      console.log(`加点香草糖浆`);
+      
+    },
+    mocha() {
+      this.latte();
+      console.log(`加点巧克力`);
+      
+    },
+    init() {
+
+    }
+  }
+
+  constructor() {
+    this.state = "init";
+    this.leftMilk = 500;
+  }
+  makeCoffee(state: State) {
+    if (!this.coffeeProcessor[state]) {
+      return;
+    }
+    return this.coffeeProcessor[state]();
+  }
+}
+
+let coffeeMaker = new CoffeeMaker();
+coffeeMaker.makeCoffee("latte");
+coffeeMaker.makeCoffee("latte");
+coffeeMaker.makeCoffee("latte");
+coffeeMaker.makeCoffee("latte");
+coffeeMaker.makeCoffee("latte");
+coffeeMaker.makeCoffee("latte");
+coffeeMaker.makeCoffee("latte");
+coffeeMaker.makeCoffee("latte");
+coffeeMaker.makeCoffee("latte");
 export {}
