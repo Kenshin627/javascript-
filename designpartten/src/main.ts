@@ -31,7 +31,6 @@ btn.click();
 
 
 // 代理
-
 function add(...nums: number[]) {
   return nums.reduce((acc,cur) => { return acc + cur }, 0);
 }
@@ -50,5 +49,37 @@ let proxyAdd = (function(){
 
 console.log(proxyAdd(1,2,3,4,5));
 console.log(proxyAdd(1,2,3,4,5));
+
+//策略模式
+
+
+type TAG = 'pre' | 'onSale' | 'back' | 'fresh';
+type salePrice = (origin: number) => number;
+const PRICES: Record<TAG, salePrice> = {
+  pre: (originPrice: number) => {
+    if (originPrice >= 100) {
+      return originPrice - 20;
+    }
+    return originPrice * 0.9;
+  },
+  onSale: (originPrice: number) => {
+    if (originPrice >= 100) {
+      return originPrice - 30;
+    }
+    return originPrice * 0.8;
+  },
+  back: (originPrice: number) => {
+    if (originPrice >= 200) {
+      return originPrice - 50;
+    }
+    return originPrice;
+  },
+  fresh: (originPrice: number) => {
+    return originPrice * 0.5;
+  }
+}
+function askPrice(tag: TAG, originPrice: number) {
+  return PRICES[tag](originPrice);
+}
 
 export {}
