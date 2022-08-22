@@ -17,7 +17,7 @@ function buttonDecorator(target: any) {
 }
 
 
-function clickDecorator(target: any, name: any, descriptor: any) {
+function clickDecorator(_target: any, _name: any, descriptor: any) {
   let originMethod: Function = descriptor.value;
   descriptor.value = function(){
     console.log(`装饰器func调用`);
@@ -37,7 +37,7 @@ function add(...nums: number[]) {
 
 let proxyAdd = (function(){
   let resAddCache: Record<string, number> = {};
-  return function(...nums: number[]) {
+  return function(..._nums: number[]) {
     let argString = Array.prototype.join.call(arguments, ",");
     if (resAddCache.hasOwnProperty(argString)) {
       return resAddCache[argString]
@@ -78,7 +78,7 @@ const PRICES: Record<TAG, salePrice> = {
     return originPrice * 0.5;
   }
 }
-function askPrice(tag: TAG, originPrice: number) {
+export function askPrice(tag: TAG, originPrice: number) {
   return PRICES[tag](originPrice);
 }
 
@@ -144,7 +144,7 @@ interface IObserver {
 
 class Publisher {
   private _observers: IObserver[];
-  constructor(name: string) { 
+  constructor(_name: string) { 
     this._observers = [];
   }
 
@@ -272,7 +272,7 @@ target.age = 20;
 
 
 //eventEmitter
-class EventEmitter {
+export class EventEmitter {
   private handler: Record<string, Function[]>;
   constructor() {
     this.handler = {};
