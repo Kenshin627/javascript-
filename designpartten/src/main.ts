@@ -134,10 +134,57 @@ let coffeeMaker = new CoffeeMaker();
 coffeeMaker.makeCoffee("latte");
 coffeeMaker.makeCoffee("latte");
 coffeeMaker.makeCoffee("latte");
-coffeeMaker.makeCoffee("latte");
-coffeeMaker.makeCoffee("latte");
-coffeeMaker.makeCoffee("latte");
-coffeeMaker.makeCoffee("latte");
-coffeeMaker.makeCoffee("latte");
-coffeeMaker.makeCoffee("latte");
+
+//观察者模式
+
+interface IObserver {
+  update: (...args: unknown[]) => any;
+}
+
+
+class Publisher {
+  private _observers: IObserver[];
+  constructor(name: string) { 
+    this._observers = [];
+  }
+
+  addObserver(...observers: IObserver[]) {
+    this._observers.push(...observers);
+  }
+
+  removeObserver(observer: IObserver) {
+    const idx = this._observers.indexOf(observer);
+    this._observers.splice(idx, 1);
+  }
+
+  checkObserver() {
+    return this._observers && this._observers.length;
+  }
+
+  notify() {
+    if (this.checkObserver()) {
+      this._observers.forEach(observer => {
+        observer.update();
+      })
+    }
+  }
+}
+
+class Observer implements IObserver {
+  public name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+  update(){
+    console.log(`${this.name} has been active!`);
+  }
+}
+
+let pb = new Publisher("p1");
+let observer1 = new Observer("zhangsan");
+let observer2 = new Observer("lisi");
+let observer3 = new Observer("wangwu");
+pb.addObserver(observer1, observer2, observer3);
+
+pb.notify();
 export {}
