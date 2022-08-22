@@ -270,4 +270,52 @@ observe(target);
 target.name = "xiaohong";
 target.age = 20;
 
+
+//eventEmitter
+class EventEmitter {
+  private handler: Record<string, Function[]>;
+  constructor() {
+    this.handler = {};
+  }
+
+  private _getEventCallbacks(event: string): Function[] {
+    const callbackList = this.handler[event];
+    if (!callbackList) {
+      this.handler[event] = [];
+    }
+    return this.handler[event];
+  }
+
+  on(event: string, callback: Function) {
+    let callbackList = this._getEventCallbacks(event);
+    let idx = callbackList.indexOf(callback);
+    if (idx === -1) {
+      callbackList.push(callback);
+    }
+  }
+
+  emit(event:string, ...args: unknown[]) {
+      let callbackList = this._getEventCallbacks(event);
+      callbackList.forEach( cb => {
+        cb(args);
+      })
+    }
+
+  off(event: string, callback: Function) {
+    const callbackList = this._getEventCallbacks(event);
+    const idx = callbackList.indexOf(callback);
+    if (idx >= 0) {
+      callbackList.splice(idx, 1);
+    }
+  }
+
+  once(event: string, callback: Function) {
+    const wrapper = (...args:unknown[]) =>  {
+      callback(...args);
+      this.off(event, wrapper);
+    }
+    this.on(event, wrapper);
+  }
+}
+
 export {}
