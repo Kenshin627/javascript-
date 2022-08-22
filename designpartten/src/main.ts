@@ -154,7 +154,9 @@ class Publisher {
 
   removeObserver(observer: IObserver) {
     const idx = this._observers.indexOf(observer);
-    this._observers.splice(idx, 1);
+    if (idx >= 0) {
+      this._observers.splice(idx, 1);
+    }
   }
 
   checkObserver() {
@@ -187,4 +189,85 @@ let observer3 = new Observer("wangwu");
 pb.addObserver(observer1, observer2, observer3);
 
 pb.notify();
+
+//vuejs响应式
+
+interface ISubscribe {
+  update: (...args: unknown[]) => any;
+}
+
+class Dep {
+  private subs: ISubscribe[];
+  constructor(){
+    this.subs = [];
+  }
+
+  addSubs(...subs:ISubscribe[]) {
+    this.subs.push(...subs);
+  }
+
+  removeSubs(sub: ISubscribe) {
+    const idx = this.subs.indexOf(sub);
+    if (idx >= 0) {
+      this.subs.splice(idx, 1);
+    }
+  }
+
+  notify(val: any) {
+    this.subs.forEach(sub => {
+      sub.update(val);
+    })
+  }
+}
+
+class Subscribe implements ISubscribe {
+  public name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  update(val: any) {
+    console.log(`${this.name} get ${val}`);
+  }
+}
+
+function observe(target: any) {
+  if (target && target instanceof Object) {
+    for (const k of Object.keys(target)) {
+      if (target.hasOwnProperty(k)) {
+        defineReactive(target, k ,target[k]);
+      }
+    }
+  }
+}
+
+
+
+function defineReactive(target: Object, k: any, v: any) {
+  let dep = new Dep();
+  dep.addSubs(...["sub1", "sub2", "sub3", "sub4"].map( t => new Subscribe(t)));
+  observe(v);
+  Object.defineProperty(target, k, {
+    enumerable: true,
+    get() {
+      return v;
+    },
+    set(newVal) {
+      console.log(`属性值变更from${v} to ${newVal}`);
+      dep.notify(newVal);
+      v = newVal;
+    }
+  })
+}
+
+let target = {
+  name: "zhangsan",
+  age: 18
+}
+
+observe(target);
+
+target.name = "xiaohong";
+target.age = 20;
+
 export {}
