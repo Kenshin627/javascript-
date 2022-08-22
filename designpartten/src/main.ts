@@ -318,4 +318,42 @@ export class EventEmitter {
   }
 }
 
+//ES6 iterator
+function *it() {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+
+let obj = {
+  [Symbol.iterator]: it
+}
+
+for (const item of obj) {
+  console.log(item);
+  
+}
+
+//ES5 iteratorGenerator
+function iteratorGenerator(list: unknown[]) {
+  let idx = 0;
+  let len = list.length;
+
+  return {
+    next: function (){
+      let done = idx >= len;
+      let value = !done? list[idx++] : undefined;
+      return {
+        done,
+        value
+      }
+    }
+  }
+}
+
+let iterator = iteratorGenerator([1,2,3]);
+console.log(iterator.next());
+console.log(iterator.next());
+console.log(iterator.next());
+console.log(iterator.next());
 export {}
